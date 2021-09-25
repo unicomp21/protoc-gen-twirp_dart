@@ -123,12 +123,7 @@ class Default{{.Name}} implements {{.Name}} {
     Requester _requester;
 	final _pathPrefix = "/twirp/{{.Package}}.{{.Name}}/";
 
-    Default{{.Name}}(this.hostname, {Requester requester}) {
-		if (requester == null) {
-      		_requester = new Requester(new Client());
-    	} else {
-			_requester = requester;
-		}
+    Default{{.Name}}(this.hostname, this._requester) {
 	}
 
     {{range .Methods}}
