@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/apptreesoftware/protoc-gen-twirp_dart/example/go/config/model"
-	"github.com/apptreesoftware/protoc-gen-twirp_dart/example/go/config/service"
+	"github.com/unicomp21/protoc-gen-twirp_dart/example/go/config/model"
+	"github.com/unicomp21/protoc-gen-twirp_dart/example/go/config/service"
 	"log"
 	"math/rand"
 	"net/http"

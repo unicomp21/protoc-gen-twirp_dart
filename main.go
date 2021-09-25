@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/apptreesoftware/protoc-gen-twirp_dart/generator"
 	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
+	"github.com/unicomp21/protoc-gen-twirp_dart/generator"
 	"io"
 	"io/ioutil"
 	"os"
