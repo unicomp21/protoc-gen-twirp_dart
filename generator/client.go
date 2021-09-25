@@ -36,7 +36,7 @@ class {{.Name}} {
 		{{- range .Fields -}}
 			{{if .IsMap}}
 			var {{.Name}}Map = {{.Type}}();
-			(json['{{.JSONName}}'] as Map<String, dynamic>)?.forEach((key, val) {
+			(json['{{.JSONName}}'] as Map<String, dynamic>).forEach((key, val) {
 				{{if .MapValueField.IsMessage}}
 				{{.Name}}Map[key] = {{.MapValueField.Type}}.fromJson(val as Map<String,dynamic>);
 				{{else}}
@@ -89,9 +89,9 @@ class {{.Name}} {
 		{{- if .IsMap }}
 		map['{{.JSONName}}'] = json.decode(json.encode({{.Name}}));
 		{{- else if and .IsRepeated .IsMessage}}
-		map['{{.JSONName}}'] = {{.Name}}?.map((l) => l.toJson())?.toList();
+		map['{{.JSONName}}'] = {{.Name}}.map((l) => l.toJson()).toList();
 		{{- else if .IsRepeated }}
-		map['{{.JSONName}}'] = {{.Name}}?.map((l) => l)?.toList();
+		map['{{.JSONName}}'] = {{.Name}}.map((l) => l).toList();
 		{{- else if and (.IsMessage) (eq .Type "DateTime")}}
 		map['{{.JSONName}}'] = {{.Name}}.toIso8601String();
 		{{- else if .IsMessage}}
