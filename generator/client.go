@@ -84,7 +84,7 @@ class {{.Name}} {
 	}
 
 	Map<String,dynamic>toJson() {
-		var map = Map<String, dynamic>();
+		var map = <String, dynamic>{};
     	{{- range .Fields -}}
 		{{- if .IsMap }}
 		map['{{.JSONName}}'] = json.decode(json.encode({{.Name}}));
