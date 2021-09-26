@@ -132,7 +132,7 @@ func (ctx *APIContext) ApplyImports(d *descriptor.FileDescriptorProto) {
 		deps = append(deps, Import{"package:twirp_dart_core/twirp_dart_core.dart"})
 	}
 	deps = append(deps, Import{"dart:convert"})
-	deps = append(deps, Import{d.GetName() + ".pb.dart"})
+	deps = append(deps, Import{strings.Replace(d.GetName(), ".proto", "", -1) + ".pb.dart"})
 
 	for _, dep := range d.Dependency {
 		if dep == "google/protobuf/timestamp.proto" {
