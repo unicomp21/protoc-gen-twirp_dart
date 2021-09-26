@@ -45,14 +45,14 @@ class Default{{.Name}} implements {{.Name}} {
 		if (response.statusCode != 200) {
      		throw twirpException(response);
     	}
-    	var value = jsonDecode(response.body);
+    	var value = response.body;
     	return {{.OutputType}}.fromJson(value);
 	}
     {{end}}
 
 	Exception twirpException(Response response) {
     	try {
-      		var value = jsonDecode(response.body);
+      		var value = response.body;
       		return TwirpJsonException.fromJson(value);
     	} catch (e) {
       		return TwirpException(response.body);
