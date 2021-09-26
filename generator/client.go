@@ -40,19 +40,19 @@ class Default{{.Name}} implements {{.Name}} {
 		var uri = Uri.parse(url);
     	var request = Request('POST', uri);
 		request.headers['Content-Type'] = 'application/json';
-    	request.body = json.encode({{.InputArg}});
+    	request.body = {{.InputArg}}.writeToJson();
     	var response = await _requester.send(request);
 		if (response.statusCode != 200) {
      		throw twirpException(response);
     	}
-    	var value = json.decode(response.body);
+    	var value = jsonDecode(response.body);
     	return {{.OutputType}}.fromJson(value);
 	}
     {{end}}
 
 	Exception twirpException(Response response) {
     	try {
-      		var value = json.decode(response.body);
+      		var value = jsonDecode(response.body);
       		return TwirpJsonException.fromJson(value);
     	} catch (e) {
       		return TwirpException(response.body);
