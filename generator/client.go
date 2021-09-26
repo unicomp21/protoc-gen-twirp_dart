@@ -35,7 +35,7 @@ class {{.Name}} {
 	factory {{.Name}}.fromJson(Map<String,dynamic> json) {
 		{{- range .Fields -}}
 			{{if .IsMap}}
-			var {{.Name}}Map = {{.Type}}();
+			var {{.Name}}Map = {{.Type}}{};
 			(json['{{.JSONName}}'] as Map<String, dynamic>).forEach((key, val) {
 				{{if .MapValueField.IsMessage}}
 				{{.Name}}Map[key] = {{.MapValueField.Type}}.fromJson(val as Map<String,dynamic>);
@@ -431,7 +431,7 @@ func newField(f *descriptor.FieldDescriptorProto,
 			field.MapKeyField = &mapKeyField
 			mapValueField := newField(valueField, nested, d, gen)
 			field.MapValueField = &mapValueField
-			field.Type = fmt.Sprintf("Map<%s,%s>", mapKeyField.Type, mapValueField.Type)
+			field.Type = fmt.Sprintf("<%s,%s>", mapKeyField.Type, mapValueField.Type)
 		}
 	}
 	field.IsMessage = f.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE
