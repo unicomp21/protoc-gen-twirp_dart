@@ -19,98 +19,6 @@ const apiTemplate = `
 import '{{.Path}}';
 {{- end}}
 
-{{- range .Models}}
-{{- if not .Primitive}}
-class {{.Name}} {
-
-	{{.Name}}(
-	{{range .Fields -}}
-		this.{{.Name}},
-	{{- end}});
-
-    {{range .Fields -}}
-    {{.Type}} {{.Name}};
-    {{end}}
-	
-	factory {{.Name}}.fromJson(Map<String,dynamic> json) {
-		{{- range .Fields -}}
-			{{if .IsMap}}
-			var {{.Name}}Map = {{.Type}}();
-			(json['{{.JSONName}}'] as Map<String, dynamic>).forEach((key, val) {
-				{{if .MapValueField.IsMessage}}
-				{{.Name}}Map[key] = {{.MapValueField.Type}}.fromJson(val as Map<String,dynamic>);
-				{{else}}
-				if (val is String) {
-					{{if eq .MapValueField.Type "double"}}
-						{{.Name}}Map[key] = double.parse(val);
-					{{end}}
-					{{if eq .MapValueField.Type "int"}}
-						{{.Name}}Map[key] = int.parse(val);
-					{{end}}
-				} else if (val is num) {
-					{{if eq .MapValueField.Type "double"}}
-						{{.Name}}Map[key] = val.toDouble();
-					{{end}}
-					{{if eq .MapValueField.Type "int"}}
-						{{.Name}}Map[key] = val.toInt();
-					{{end}}
-				}
-				{{end}}
-			});
-			{{end}}
-		{{end}}
-
-		return {{.Name}}(
-		{{- range .Fields -}}
-		{{if .IsMap}}
-		{{.Name}}Map,
-		{{else if and .IsRepeated .IsMessage}}
-		json['{{.JSONName}}'] != null
-          ? (json['{{.JSONName}}'] as List)
-              .map((d) => {{.InternalType}}.fromJson(d))
-              .toList()
-          : <{{.InternalType}}>[],
-		{{else if .IsRepeated }}
-		json['{{.JSONName}}'] != null ? (json['{{.JSONName}}'] as List).cast<{{.InternalType}}>() : <{{.InternalType}}>[],
-		{{else if and (.IsMessage) (eq .Type "DateTime")}}
-		{{.Type}}.tryParse(json['{{.JSONName}}']),
-		{{else if .IsMessage}}
-		{{.Type}}.fromJson(json['{{.JSONName}}']),
-		{{else}}
-		json['{{.JSONName}}'] as {{.Type}}, 
-		{{- end}}
-		{{- end}}
-		);	
-	}
-
-	Map<String,dynamic>toJson() {
-		var map = <String, dynamic>{};
-    	{{- range .Fields -}}
-		{{- if .IsMap }}
-		map['{{.JSONName}}'] = json.decode(json.encode({{.Name}}));
-		{{- else if and .IsRepeated .IsMessage}}
-		map['{{.JSONName}}'] = {{.Name}}.map((l) => l.toJson()).toList();
-		{{- else if .IsRepeated }}
-		map['{{.JSONName}}'] = {{.Name}}.map((l) => l).toList();
-		{{- else if and (.IsMessage) (eq .Type "DateTime")}}
-		map['{{.JSONName}}'] = {{.Name}}.toIso8601String();
-		{{- else if .IsMessage}}
-		map['{{.JSONName}}'] = {{.Name}}.toJson();
-		{{- else}}
-    	map['{{.JSONName}}'] = {{.Name}};
-    	{{- end}}
-		{{- end}}
-		return map;
-	}
-
-  @override
-  String toString() {
-    return json.encode(toJson());
-  }
-}
-{{end -}}
-{{end -}}
-
 {{range .Services}}
 abstract class {{.Name}} {
 	{{- range .Methods}}
@@ -132,7 +40,7 @@ class Default{{.Name}} implements {{.Name}} {
 		var uri = Uri.parse(url);
     	var request = Request('POST', uri);
 		request.headers['Content-Type'] = 'application/json';
-    	request.body = json.encode({{.InputArg}}.toJson());
+    	request.body = json.encode({{.InputArg}});
     	var response = await _requester.send(request);
 		if (response.statusCode != 200) {
      		throw twirpException(response);
