@@ -35,7 +35,7 @@ class {{.Name}} {
 	factory {{.Name}}.fromJson(Map<String,dynamic> json) {
 		{{- range .Fields -}}
 			{{if .IsMap}}
-			var {{.Name}}Map = {{.Type[3:len(.Type)]}}{};
+			var {{.Name}}Map = {{.Type}}();
 			(json['{{.JSONName}}'] as Map<String, dynamic>).forEach((key, val) {
 				{{if .MapValueField.IsMessage}}
 				{{.Name}}Map[key] = {{.MapValueField.Type}}.fromJson(val as Map<String,dynamic>);
