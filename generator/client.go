@@ -69,7 +69,9 @@ class Default{{.Name}} implements {{.Name}} {
 		final body = jsonEncode({{.InputArg}}_1.toProto3Json());
 		final response = await post(
 				uri,
-				headers: {'Content-Type': 'application/json'},
+				headers: {
+					'Content-Type': 'application/json'
+				},
 				body: body,
 		);
 		if (response.statusCode != 200) {
