@@ -35,18 +35,21 @@ class Default{{.Name}} implements {{.Name}} {
 	}
 
     {{range .Methods}}
-	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}) async {
+	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}_1) async {
 		var url = "${hostname}${_pathPrefix}{{.Path}}";
 		var uri = Uri.parse(url);
-    	var request = Request('POST', uri);
-		request.headers['Content-Type'] = 'application/json';
-    	request.body = {{.InputArg}}.writeToJson();
-    	var response = await _requester.send(request);
+		final body = jsonEncode({{.InputArg}}.toProto3Json());
+		final response = await http.post(
+				uri,
+				headers: {'Content-Type': 'application/json'},
+				body: body,
+		);
 		if (response.statusCode != 200) {
-     		throw twirpException(response);
-    	}
-    	var value = jsonDecode(response.body);
-    	return {{.OutputType}}.fromJson(value);
+			throw twirpException(response);
+		}
+		final tmp = {{.InputType}}();
+		tmp.mergeFromProto3Json(jsonDecode(response.body));
+		return tmp;
 	}
     {{end}}
 
