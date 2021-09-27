@@ -30,9 +30,6 @@ class Default{{.Name}} implements {{.Name}} {
 	final String hostname;
 	final _pathPrefix = "/twirp/{{.Package}}.{{.Name}}/";
 
-    Default{{.Name}}(this.hostname, this._requester) {
-	}
-
     {{range .Methods}}
 	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}_1) async {
 		var url = "${hostname}${_pathPrefix}{{.Path}}";
