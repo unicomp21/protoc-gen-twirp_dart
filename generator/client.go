@@ -38,7 +38,7 @@ class TwirpJsonException extends TwirpException {
 	TwirpJsonException(this.code, this.msg, this.meta) : super(msg);
 	
 	factory TwirpJsonException.fromJson(Map<String, dynamic> json) {
-	return new TwirpJsonException(
+	return TwirpJsonException(
 		json['code'] as String, json['msg'] as String, json['meta']);
 	}
 	
@@ -61,6 +61,7 @@ class Default{{.Name}} implements {{.Name}} {
 
 	Default{{.Name}}(this.hostname);
 
+	@override
     {{range .Methods}}
 	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}_1) async {
 		var url = "${hostname}${_pathPrefix}{{.Path}}";
