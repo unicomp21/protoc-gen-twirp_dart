@@ -19,6 +19,35 @@ const apiTemplate = `
 import '{{.Path}}';
 {{- end}}
 
+class TwirpException implements Exception {
+	final String message;
+	
+	TwirpException(this.message);
+	
+	@override
+	String toString() {
+	return 'TwirpException{message: $message}';
+	}
+}
+
+class TwirpJsonException extends TwirpException {
+	final String code;
+	final String msg;
+	final dynamic meta;
+	
+	TwirpJsonException(this.code, this.msg, this.meta) : super(msg);
+	
+	factory TwirpJsonException.fromJson(Map<String, dynamic> json) {
+	return new TwirpJsonException(
+		json['code'] as String, json['msg'] as String, json['meta']);
+	}
+	
+	@override
+	String toString() {
+	return 'TwirpJsonException{code: $code, msg: $msg, meta: $meta}';
+	}
+}
+
 {{range .Services}}
 abstract class {{.Name}} {
 	{{- range .Methods}}
@@ -62,7 +91,6 @@ class Default{{.Name}} implements {{.Name}} {
 }
 
 {{end}}
-
 `
 
 type Model struct {
@@ -129,8 +157,6 @@ func (ctx *APIContext) ApplyImports(d *descriptor.FileDescriptorProto) {
 	if len(ctx.Services) > 0 {
 		deps = append(deps, Import{"dart:async"})
 		deps = append(deps, Import{"package:http/http.dart"})
-		deps = append(deps, Import{"package:requester/requester.dart"})
-		deps = append(deps, Import{"package:twirp_dart_core/twirp_dart_core.dart"})
 	}
 	deps = append(deps, Import{"dart:convert"})
 	deps = append(deps, Import{strings.Replace(d.GetName(), ".proto", "", -1) + ".pb.dart"})
