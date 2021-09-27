@@ -38,7 +38,7 @@ class Default{{.Name}} implements {{.Name}} {
 	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}_1) async {
 		var url = "${hostname}${_pathPrefix}{{.Path}}";
 		var uri = Uri.parse(url);
-		final body = jsonEncode({{.InputArg}}.toProto3Json());
+		final body = jsonEncode({{.InputArg}}_1.toProto3Json());
 		final response = await http.post(
 				uri,
 				headers: {'Content-Type': 'application/json'},
@@ -47,7 +47,7 @@ class Default{{.Name}} implements {{.Name}} {
 		if (response.statusCode != 200) {
 			throw twirpException(response);
 		}
-		final tmp = {{.InputType}}();
+		final tmp = {{.OutputType}}();
 		tmp.mergeFromProto3Json(jsonDecode(response.body));
 		return tmp;
 	}
@@ -130,9 +130,7 @@ func (ctx *APIContext) ApplyImports(d *descriptor.FileDescriptorProto) {
 
 	if len(ctx.Services) > 0 {
 		deps = append(deps, Import{"dart:async"})
-		deps = append(deps, Import{"package:http/http.dart"})
-		deps = append(deps, Import{"package:requester/requester.dart"})
-		deps = append(deps, Import{"package:twirp_dart_core/twirp_dart_core.dart"})
+		deps = append(deps, Import{"package:http/http.dart as http"})
 	}
 	deps = append(deps, Import{"dart:convert"})
 	deps = append(deps, Import{strings.Replace(d.GetName(), ".proto", "", -1) + ".pb.dart"})
