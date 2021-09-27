@@ -28,7 +28,6 @@ abstract class {{.Name}} {
 
 class Default{{.Name}} implements {{.Name}} {
 	final String hostname;
-    Requester _requester;
 	final _pathPrefix = "/twirp/{{.Package}}.{{.Name}}/";
 
     Default{{.Name}}(this.hostname, this._requester) {
@@ -39,7 +38,7 @@ class Default{{.Name}} implements {{.Name}} {
 		var url = "${hostname}${_pathPrefix}{{.Path}}";
 		var uri = Uri.parse(url);
 		final body = jsonEncode({{.InputArg}}_1.toProto3Json());
-		final response = await http.post(
+		final response = await post(
 				uri,
 				headers: {'Content-Type': 'application/json'},
 				body: body,
@@ -130,7 +129,9 @@ func (ctx *APIContext) ApplyImports(d *descriptor.FileDescriptorProto) {
 
 	if len(ctx.Services) > 0 {
 		deps = append(deps, Import{"dart:async"})
-		deps = append(deps, Import{"package:http/http.dart as http"})
+		deps = append(deps, Import{"package:http/http.dart"})
+		deps = append(deps, Import{"package:requester/requester.dart"})
+		deps = append(deps, Import{"package:twirp_dart_core/twirp_dart_core.dart"})
 	}
 	deps = append(deps, Import{"dart:convert"})
 	deps = append(deps, Import{strings.Replace(d.GetName(), ".proto", "", -1) + ".pb.dart"})
