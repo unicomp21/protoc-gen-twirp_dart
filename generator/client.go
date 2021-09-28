@@ -55,11 +55,11 @@ abstract class {{.Name}} {
     {{- end}}
 }
 
-class Default{{.Name}} implements {{.Name}} {
+class TwirpJson{{.Name}} implements {{.Name}} {
 	final String hostname;
 	final _pathPrefix = "/twirp/{{.Package}}.{{.Name}}/";
 
-	Default{{.Name}}(this.hostname);
+	TwirpJson{{.Name}}(this.hostname);
 
 	@override
     {{range .Methods}}
@@ -80,6 +80,42 @@ class Default{{.Name}} implements {{.Name}} {
 		final tmp = {{.OutputType}}();
 		tmp.mergeFromProto3Json(jsonDecode(response.body));
 		return tmp;
+	}
+    {{end}}
+
+	Exception twirpException(Response response) {
+    	try {
+      		var value = jsonDecode(response.body);
+      		return TwirpJsonException.fromJson(value);
+    	} catch (e) {
+      		return TwirpException(response.body);
+    	}
+  	}
+}
+
+class TwirpProtobuf{{.Name}} implements {{.Name}} {
+	final String hostname;
+	final _pathPrefix = "/twirp/{{.Package}}.{{.Name}}/";
+
+	TwirpProtobuf{{.Name}}(this.hostname);
+
+	@override
+    {{range .Methods}}
+	Future<{{.OutputType}}>{{.Name}}({{.InputType}} {{.InputArg}}_1) async {
+		var url = "${hostname}${_pathPrefix}{{.Path}}";
+		var uri = Uri.parse(url);
+		final body = {{.InputArg}}_1.writeToBuffer();
+		final response = await post(
+				uri,
+				headers: {
+					'Content-Type': 'application/protobuf'
+				},
+				body: body,
+		);
+		if (response.statusCode != 200) {
+			throw twirpException(response);
+		}
+		return {{.OutputType}}.fromBuffer(response.bodyBytes);
 	}
     {{end}}
 
